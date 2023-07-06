@@ -37,7 +37,7 @@
            
 	</div>
         
-        
+        <div th:text="${#numbers.formatDecimal(reportSum.getTotalCount(), 0, 'COMMA', 0, 'POINT') + '건' }"></div>
 
 </body>
 </html>
