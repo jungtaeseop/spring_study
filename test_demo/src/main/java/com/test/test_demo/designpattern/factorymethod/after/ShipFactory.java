@@ -28,6 +28,4 @@ public interface ShipFactory {
         System.out.println(name + " 만들 준비 중");
     }
 
-
-
 }
