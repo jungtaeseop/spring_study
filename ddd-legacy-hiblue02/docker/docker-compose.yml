@@ -1,7 +1,9 @@
 version: "3.9"
 services:
   db:
-    image: mysql:8.0.30
+    build:
+      context: .
+      dockerfile: Dockerfile
     platform: linux/x86_64
     restart: always
     ports:
@@ -12,7 +14,10 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       TZ: Asia/Seoul
+    command: # 명령어 실행
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./db/mysql/data:/var/lib/mysql
-      - ./db/mysql/config:/etc/mysql/conf.d
-      - ./db/mysql/init:/docker-entrypoint-initdb.d
+#      - ./db/mysql/config:/etc/mysql/conf.d
+#      - ./db/mysql/init:/docker-entrypoint-initdb.d
