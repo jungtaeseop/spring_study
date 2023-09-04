@@ -19,6 +19,9 @@ public class MenuGroupService {
 
     @Transactional
     public MenuGroup create(final MenuGroup request) {
+        /**
+         * 메뉴 생성시 이름은 필수로 값이 있어야된다.
+         * */
         final String name = request.getName();
         if (Objects.isNull(name) || name.isEmpty()) {
             throw new IllegalArgumentException();

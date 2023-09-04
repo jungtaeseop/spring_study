@@ -34,6 +34,9 @@ public class MyMapFactorization {
         System.out.println("다른 결과 개수: " + countDifferentResults);*/
     }
 
+    /**
+     * 다른 사람이 푼 방식
+     * */
     private static int[] solution2(int numer1, int denom1, int numer2, int denom2) {
         int numerator = (numer1 * denom2) + (numer2 * denom1);
         int denominator = denom1 * denom2;
@@ -50,6 +53,9 @@ public class MyMapFactorization {
         return answer;
     }
 
+    /**
+     * 내가 푼 문제
+     * */
     static int[] solution(int numer1, int denom1, int numer2, int denom2) {
 
         List<Integer> denomMultiplication = Arrays.asList(denom1,denom2);
@@ -66,8 +72,7 @@ public class MyMapFactorization {
                 .mapToInt(entry -> (int) Math.pow(entry.getKey(),entry.getValue()))
                 .reduce(1,(mul,entry) -> mul*entry);
 
-        /*System.out.println(primeFactor);
-        System.out.println(leastCommonMultiple);*/
+
 
         Integer molecular = numer1 * (leastCommonMultiple / denom1);
         Integer molecular2 = numer2 * (leastCommonMultiple / denom2);
@@ -89,6 +94,9 @@ public class MyMapFactorization {
 
     }
 
+    /**
+     * 소인수분해 최소공배수 구하는 함수
+     * */
     private static Map<Integer,Integer> factorization(int item){
 
         Map<Integer,Integer> factors = new HashMap<>();

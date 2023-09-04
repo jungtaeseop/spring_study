@@ -101,8 +101,8 @@ public class MenuService {
             menuProducts.add(menuProduct);
         }
         /**
-         * 상품과 개수 곱하고 List로 돌면서 합한 값이(sum) 메뉴 가격(price) 보다 낮아야된다. 아니면 오류 발생
-         * 메뉴 가격이 더 높아야된다.
+         * 메뉴 가격(price)이 상품과 개수 곱하고 List로 돌면서 합한 값(sum) 보다 작거나 같아야된다.
+         * 상품의 더한 값이 가격이 더 높아야된다.
          * */
         if (price.compareTo(sum) > 0) {
             throw new IllegalArgumentException();
@@ -132,11 +132,20 @@ public class MenuService {
     @Transactional
     public Menu changePrice(final UUID menuId, final Menu request) {
         final BigDecimal price = request.getPrice();
+        /**
+         * 가격이 필수로 있어야 되고 0보다 커야 됩니다.
+         * */
         if (Objects.isNull(price) || price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException();
         }
+        /**
+         * 메뉴테이블에 등록된 메뉴id가 있어야됩니다.
+         * */
         final Menu menu = menuRepository.findById(menuId)
             .orElseThrow(NoSuchElementException::new);
+        /**
+         * 메뉴 가격은 [상품 가격과 상품 개수를 곱한 값] 보다  작거나 같아야 된다.
+         * */
         for (final MenuProduct menuProduct : menu.getMenuProducts()) {
             final BigDecimal sum = menuProduct.getProduct()
                 .getPrice()
@@ -145,14 +154,23 @@ public class MenuService {
                 throw new IllegalArgumentException();
             }
         }
+        /**
+         * 메뉴의 가격을 바꾼다.
+         * */
         menu.setPrice(price);
         return menu;
     }
 
     @Transactional
     public Menu display(final UUID menuId) {
+        /**
+         * 메뉴 테이블에 메뉴 id 가 등록 되어 있어야 됩니다.
+         * */
         final Menu menu = menuRepository.findById(menuId)
             .orElseThrow(NoSuchElementException::new);
+        /**
+         * 메뉴 가격이 상품 개수와 상품 가격을 곱한 값 보다 작거나 같아야 됩니다.
+         * */
         for (final MenuProduct menuProduct : menu.getMenuProducts()) {
             final BigDecimal sum = menuProduct.getProduct()
                 .getPrice()
@@ -167,6 +185,9 @@ public class MenuService {
 
     @Transactional
     public Menu hide(final UUID menuId) {
+        /**
+         * 메뉴테이블에 메뉴가 있어야 합니다.
+         * */
         final Menu menu = menuRepository.findById(menuId)
             .orElseThrow(NoSuchElementException::new);
         menu.setDisplayed(false);
