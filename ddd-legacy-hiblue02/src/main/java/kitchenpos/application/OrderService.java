@@ -132,22 +132,22 @@ public class OrderService {
         final Order order = orderRepository.findById(orderId)
             .orElseThrow(NoSuchElementException::new);
         /**
-         * 주문 상태가 WAITING 값이어야 한다. 다른 값(ACCEPTED, SERVED, DELIVERING, DELIVERED, COMPLETED)
+         * 주문 상태가 대기중(WAITING) 이어야 한다. 다른 값(ACCEPTED, SERVED, DELIVERING, DELIVERED, COMPLETED)
          * */
         if (order.getStatus() != OrderStatus.WAITING) {
             throw new IllegalStateException();
         }
         /**
-         * sum.add 필요할 것 같음.
+         * sum.add 필요할 것 같아서 수정
          * 배달 라이더한테 주문번호, 총 금액, 배달지 주소를 전달한다.
          * 주문 상태를 ACCEPTED(수락) 상태로 변경한다.
          * */
         if (order.getType() == OrderType.DELIVERY) {
             BigDecimal sum = BigDecimal.ZERO;
             for (final OrderLineItem orderLineItem : order.getOrderLineItems()) {
-                sum = orderLineItem.getMenu()
-                    .getPrice()
-                    .multiply(BigDecimal.valueOf(orderLineItem.getQuantity()));
+                sum = sum.add(orderLineItem.getMenu()
+                        .getPrice()
+                        .multiply(BigDecimal.valueOf(orderLineItem.getQuantity())));
             }
             kitchenridersClient.requestDelivery(orderId, sum, order.getDeliveryAddress());
         }

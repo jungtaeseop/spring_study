@@ -32,32 +32,33 @@ public class MenuService {
     public Menu create(final Menu request) {
         final BigDecimal price = request.getPrice();
         /**
-         * Objects.isNull price 가 null 이면 true
+         *
          * price.compareTo 비교  :  price 와 BigDecimal.ZERO 같으면 0  , price가 작으면 -1
-         * 결론 : price 가 마이너스이면 true
+         * 메뉴 생성할 때  메뉴의 가격이 필수로 입력이 되어야 하고, 0 이상이어야한다.
          */
         if (Objects.isNull(price) || price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException();
         }
         /**
-         * Menu에서 메뉴그룹 id 찾아 menuGroup을 찾는다. 없으면 Nosuch 오류
+         * 메뉴 생성할 때  메뉴에 미리 등록된 메뉴 그룹이 입력되어 있어야 한다.
          */
         final MenuGroup menuGroup = menuGroupRepository.findById(request.getMenuGroupId())
             .orElseThrow(NoSuchElementException::new);
         /**
-         * 해당 menu에 있는 menu_상품을 선언한다.
-         * 찾은 menu_상품이 null 이면 true , List<MenuProduct> isEmpty(빈 값) 이면 true
-         * 메뉴_상품이 있어야된다.
+         *
+         * 메뉴 생성할 때 메뉴구성상품이 반드시 있어야된다.
          */
         final List<MenuProduct> menuProductRequests = request.getMenuProducts();
-
         if (Objects.isNull(menuProductRequests) || menuProductRequests.isEmpty()) {
             throw new IllegalArgumentException();
         }
         /**
-         *  메뉴 -> 메뉴 구성 상품 List에서 상품 id를 가져와 Products 선언
-         *  상품 리스트와 메뉴구성상품 의 사이즈가 다르다면 true
-         *  상품 리스트와 메뉴구성상품의 사이즈가 같아 된다.
+         *  메뉴 생성할 때  입력된 상품은 반드시 등록된 상품 목록에 포함되어 있어야 한다.
+         *  (상품의 uuid 값이 없는 경우 넣을 경우 row수가 안맞음)
+         *  select * from product where id IN(
+         *     UNHEX(REPLACE('4721ee72-2ff3-417f-ade3-acd0a804605b','-', ''))
+         *     ,UNHEX(REPLACE('5bfae32d-19bc-479f-8e08-8b8fee193452','-', ''))
+         *     ); 쿼리를 입력했을때 uuid가 있는 값만 출력 됩니다. 없는 값을 넣어도 오류는 없음
          * */
         final List<Product> products = productRepository.findAllByIdIn(
             menuProductRequests.stream()
@@ -77,9 +78,9 @@ public class MenuService {
         BigDecimal sum = BigDecimal.ZERO;
 
         /**
-         * 해당 메뉴에 있는 메뉴상품 구성 List를 하나씩 돌려가며
-         * 메뉴_상품구성의 개수를 가져와 quantity에 저장 , quantity가 0 보다 작으면 오류
-         * 메뉴구성상품에서 상품 id 검색해 product 가져옴
+         * 메뉴 생성할 때 입력된 상품의 개수가 0 이상이어야 한다.
+         * 메뉴 생성할 때 입력된 상품의 id가 반드시 있어야 하고 등록이 되어 있어야한다.
+         *
          * 제품 가격(product.getPrice())을 특정 수량('quantity')으로 곱합니다  기존의 sum 값과 새로 계산된 곱한 값을  더한 후에 원래의 'sum' 변수에 할당
          * 수량만큼의 제품 가격을 계산하고 그 결과를 sum값 과 합쳐서 'sum' 변수에 저장
          * 메뉴구성상품 변수 선언 -> 값 세팅 상품,상품의 개수를 메뉴구성상품 엔티티 변수에 저장
