@@ -127,7 +127,7 @@ public class OrderService {
     @Transactional
     public Order accept(final UUID orderId) {
         /**
-         * 주문 받을 때 주문 id가 있어야 한다.
+         * 주문 수락할 때 주문 id가 있어야 한다.
          * */
         final Order order = orderRepository.findById(orderId)
             .orElseThrow(NoSuchElementException::new);
@@ -158,7 +158,7 @@ public class OrderService {
     @Transactional
     public Order serve(final UUID orderId) {
         /**
-         * 제공할 때 주문 id가 있어야 한다.
+         * 음식을 제공할 때 주문 id가 있어야 한다.
          * */
         final Order order = orderRepository.findById(orderId)
             .orElseThrow(NoSuchElementException::new);
@@ -186,7 +186,7 @@ public class OrderService {
             throw new IllegalStateException();
         }
         /**
-         * 배달 시작할 때 주문상태가 제공됨 상태여야 한다.
+         * 배달 시작할 때 주문상태가 음식이 배달기사한테 제공됨 상태여야 한다.
          * */
         if (order.getStatus() != OrderStatus.SERVED) {
             throw new IllegalStateException();
