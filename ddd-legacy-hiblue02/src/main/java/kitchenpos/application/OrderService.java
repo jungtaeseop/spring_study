@@ -221,14 +221,14 @@ public class OrderService {
     @Transactional
     public Order complete(final UUID orderId) {
         /**
-         * 주문이 완료됐을 때 주문번호가 있어야 한다.
+         * 주문 처리 완료할 경우 주문번호가 있어야 한다.
          * */
         final Order order = orderRepository.findById(orderId)
             .orElseThrow(NoSuchElementException::new);
         final OrderType type = order.getType();
         final OrderStatus status = order.getStatus();
         /**
-         * 주문타입이 배달일 때 주문상태가 배달 완료여야 한다.
+         * 주문처리 완료할 경우 주문타입이 배달일 때 주문상태가 배달 완료여야 한다.
          * */
         if (type == OrderType.DELIVERY) {
             if (status != OrderStatus.DELIVERED) {
@@ -236,7 +236,7 @@ public class OrderService {
             }
         }
         /**
-         * 주문타입이 포장이거나 매장에서 식사할 때 주문의 음식 상태가 제공됨이어야 한다.
+         * 주문처리 완료할 경우 주문타입이 포장이거나 매장에서 식사할 때 주문의 음식 상태가 제공됨이어야 한다.
          * */
         if (type == OrderType.TAKEOUT || type == OrderType.EAT_IN) {
             if (status != OrderStatus.SERVED) {
@@ -248,7 +248,7 @@ public class OrderService {
          * */
         order.setStatus(OrderStatus.COMPLETED);
         /**
-         * 주문타입이 매장에서 식사일 때 주문상태가 완료이고 주문테이블이 사용중이 아니면,
+         * 주문타입이 매장에서 주문일 때 주문상태가 완료이고 주문테이블이 사용중이 아니면,
          * 주문테이블 인원수를 0변경하고 사용중이 아닌것으로 변경한다.
          * */
         if (type == OrderType.EAT_IN) {
